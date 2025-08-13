@@ -262,9 +262,9 @@ Imports data from `server/data/data.csv`
 
 ## Developer Information
 
-- **Name:** Steven Marimon
+- **Name:** Steven Daniel Marimon Delgado
 - **Clan:** caimán
-- **Email:** steven.marimon@example.com
+- **Email:** stivsitoo17@gmail.com
 - **Repository:** [https://github.com/HackStiv/database_performance_test.git](https://github.com/HackStiv/database_performance_test.git)
 
 ---
