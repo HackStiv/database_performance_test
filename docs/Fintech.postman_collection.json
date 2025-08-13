@@ -1,0 +1,60 @@
+{
+    "info": {
+      "name": "Fintech API - pd_samuel_arena_caiman",
+      "description": "Collection for customers CRUD and reports",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Customers - List",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": { "raw": "http://localhost:3000/api/customers", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","customers"] }
+        }
+      },
+      {
+        "name": "Customers - Get by ID",
+        "request": { "method": "GET", "url": { "raw": "http://localhost:3000/api/customers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","customers","1"] } }
+      },
+      {
+        "name": "Customers - Create",
+        "request": {
+          "method": "POST",
+          "header": [{"key": "Content-Type", "value": "application/json"}],
+          "body": { "mode": "raw", "raw": "{\"name\":\"John Doe\",\"identification_number\":\"12345\",\"email\":\"john@example.com\"}" },
+          "url": { "raw": "http://localhost:3000/api/customers", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","customers"] }
+        }
+      },
+      {
+        "name": "Customers - Update",
+        "request": {
+          "method": "PUT",
+          "header": [{"key":"Content-Type","value":"application/json"}],
+          "body": { "mode": "raw", "raw": "{\"name\":\"John Updated\",\"email\":\"john2@example.com\"}" },
+          "url": { "raw": "http://localhost:3000/api/customers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","customers","1"] }
+        }
+      },
+      {
+        "name": "Customers - Delete",
+        "request": { "method": "DELETE", "url": { "raw": "http://localhost:3000/api/customers/1", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","customers","1"] } }
+      },
+      {
+        "name": "Report - Total paid by customer",
+        "request": { "method": "GET", "url": { "raw": "http://localhost:3000/api/reports/total_paid_by_customer", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","reports","total_paid_by_customer"] } }
+      },
+      {
+        "name": "Report - Pending invoices",
+        "request": { "method": "GET", "url": { "raw": "http://localhost:3000/api/reports/pending_invoices", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","reports","pending_invoices"] } }
+      },
+      {
+        "name": "Report - Transactions by platform",
+        "request": { "method": "GET", "url": { "raw": "http://localhost:3000/api/reports/transactions_by_platform/Nequi", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","reports","transactions_by_platform","Nequi"] } }
+      },
+      {
+        "name": "Seed (run CSV)",
+        "request": { "method": "POST", "url": { "raw": "http://localhost:3000/api/seed", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["api","seed"] } }
+      }
+    ]
+  }
+  
