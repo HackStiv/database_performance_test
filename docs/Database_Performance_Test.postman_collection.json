@@ -1,0 +1,275 @@
+{
+	"info": {
+		"_postman_id": "steven-marimon-collection",
+		"name": "Database Performance Test - Advanced Analytics",
+		"description": "Collection of advanced analytics queries for the Database Performance Test system. This collection provides comprehensive business intelligence endpoints for customer payment analysis, outstanding balance reporting, and platform transaction analysis.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "steven-marimon"
+	},
+	"item": [
+		{
+			"name": "Customer Analytics",
+			"item": [
+				{
+					"name": "Customer Payment Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reports/total_paid_by_customer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reports",
+								"total_paid_by_customer"
+							]
+						},
+						"description": "Generates comprehensive payment analysis for all customers. Returns total amount paid by each customer across all transactions, sorted by payment amount in descending order."
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/reports/total_paid_by_customer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"reports",
+										"total_paid_by_customer"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"customer_id\": 1,\n    \"name\": \"John Doe\",\n    \"identification_number\": \"12345678\",\n    \"total_paid\": 1500000.00\n  },\n  {\n    \"customer_id\": 2,\n    \"name\": \"Jane Smith\",\n    \"identification_number\": \"87654321\",\n    \"total_paid\": 1200000.00\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Analytics endpoints focused on customer payment behavior and financial analysis."
+		},
+		{
+			"name": "Financial Reports",
+			"item": [
+				{
+					"name": "Outstanding Balance Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reports/pending_invoices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reports",
+								"pending_invoices"
+							]
+						},
+						"description": "Identifies all invoices with outstanding balances and associated customer information. Provides detailed breakdown of billed amounts, payments made, and remaining balances."
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/reports/pending_invoices",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"reports",
+										"pending_invoices"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"invoice_id\": 1,\n    \"invoice_number\": \"INV-001\",\n    \"billing_period\": \"2024-01\",\n    \"amount_billed\": 500000.00,\n    \"total_paid\": 300000.00,\n    \"balance\": 200000.00,\n    \"customer_id\": 1,\n    \"customer_name\": \"Jane Smith\",\n    \"identification_number\": \"87654321\"\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Financial reporting endpoints for outstanding balances and payment tracking."
+		},
+		{
+			"name": "Platform Analysis",
+			"item": [
+				{
+					"name": "Platform Transaction Analysis",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reports/transactions_by_platform/{{platform_name}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reports",
+								"transactions_by_platform",
+								"{{platform_name}}"
+							]
+						},
+						"description": "Filters and analyzes transactions by specific payment platform. Provides detailed transaction information including customer details, invoice references, and payment status."
+					},
+					"response": [
+						{
+							"name": "PayPal Transactions",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/reports/transactions_by_platform/PayPal",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"reports",
+										"transactions_by_platform",
+										"PayPal"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "[\n  {\n    \"transaction_id\": \"TXN-001\",\n    \"transaction_datetime\": \"2024-01-15T10:30:00\",\n    \"transaction_amount\": 500000.00,\n    \"amount_paid\": 500000.00,\n    \"transaction_status\": \"completed\",\n    \"customer_id\": 1,\n    \"customer_name\": \"Carlos Rodriguez\",\n    \"invoice_id\": 1,\n    \"invoice_number\": \"INV-001\"\n  }\n]"
+						}
+					]
+				}
+			],
+			"description": "Platform-specific transaction analysis and reporting endpoints."
+		},
+		{
+			"name": "Data Management",
+			"item": [
+				{
+					"name": "Bulk Data Import",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/seed",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"seed"
+							]
+						},
+						"description": "Initiates bulk data import from CSV file located at server/data/data.csv. Processes customer, invoice, and transaction data for database population."
+					},
+					"response": [
+						{
+							"name": "Import Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/seed",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"seed"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"success\": true,\n  \"message\": \"Data seeding completed successfully\"\n}"
+						}
+					]
+				}
+			],
+			"description": "Data management and import operations for bulk data processing."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "platform_name",
+			"value": "PayPal",
+			"type": "string"
+		}
+	]
+}
