@@ -51,7 +51,7 @@ app.post('/api/customers',
     const { name, identification_number, address, phone, email } = req.body;
     try {
       const [result] = await dbConnection.query(
-        `INSERT INTO customers (name, identification_number, address, phone, email)
+        `INSERT INTO customers (full_name, number_identity, adress, phone, email)
          VALUES (?, ?, ?, ?, ?)`,
         [name, identification_number, address || null, phone || null, email || null]
       );
@@ -72,9 +72,9 @@ app.put('/api/customers/:id',
     const { name, identification_number, address, phone, email } = req.body;
     try {
       const [result] = await dbConnection.query(
-        `UPDATE customers SET name = COALESCE(?, name),
-         identification_number = COALESCE(?, identification_number),
-         address = COALESCE(?, address),
+        `UPDATE customers SET full_name = COALESCE(?, full_name),
+         number_identity = COALESCE(?, number_identity),
+         adress = COALESCE(?, adress),
          phone = COALESCE(?, phone),
          email = COALESCE(?, email)
          WHERE customer_id = ?`,
@@ -109,11 +109,11 @@ app.delete('/api/customers/:id', async (req, res) => {
 app.get('/api/reports/total_paid_by_customer', async (req, res) => {
   try {
     const [rows] = await dbConnection.query(`
-      SELECT c.customer_id, c.name, c.identification_number,
+      SELECT c.customer_id, c.full_name, c.number_identity,
              COALESCE(SUM(t.amount_paid), 0) AS total_paid
       FROM customers c
       LEFT JOIN transactions t ON t.customer_id = c.customer_id
-      GROUP BY c.customer_id, c.name, c.identification_number
+      GROUP BY c.customer_id, c.full_name, c.number_identity
       ORDER BY total_paid DESC
     `);
     res.json(rows);
@@ -130,7 +130,7 @@ app.get('/api/reports/pending_invoices', async (req, res) => {
       SELECT i.invoice_id, i.invoice_number, i.billing_period, i.amount_billed,
              COALESCE(SUM(t.amount_paid),0) AS total_paid,
              (i.amount_billed - COALESCE(SUM(t.amount_paid),0)) AS balance,
-             c.customer_id, c.name AS customer_name, c.identification_number
+             c.customer_id, c.full_name AS customer_name, c.number_identity
       FROM invoices i
       JOIN customers c ON c.customer_id = i.customer_id
       LEFT JOIN transactions t ON t.invoice_id = i.invoice_id
@@ -151,9 +151,9 @@ app.get('/api/reports/transactions_by_platform/:platform', async (req, res) => {
     const platform = req.params.platform;
     const [rows] = await dbConnection.query(`
       SELECT t.transaction_id, t.transaction_datetime, t.transaction_amount, t.amount_paid, t.transaction_status,
-             c.customer_id, c.name AS customer_name, i.invoice_id, i.invoice_number
+             c.customer_id, c.full_name AS customer_name, i.invoice_id, i.invoice_number
       FROM transactions t
-      LEFT JOIN platforms p ON p.platform_id = t.platform_id
+      LEFT JOIN platforms p ON p.platform_id = t.platafom_id
       LEFT JOIN customers c ON c.customer_id = t.customer_id
       LEFT JOIN invoices i ON i.invoice_id = t.invoice_id
       WHERE p.name = ?

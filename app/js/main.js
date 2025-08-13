@@ -24,8 +24,8 @@ async function loadTable() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${c.customer_id}</td>
-        <td>${c.name}</td>
-        <td>${c.identification_number}</td>
+        <td>${c.full_name || c.name}</td>
+        <td>${c.number_identity || c.identification_number}</td>
         <td>${c.email || ''}</td>
         <td>${c.phone || ''}</td>
         <td>
@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!res.ok) return showAlert('Error fetching customer', 'danger');
       const data = await res.json();
       document.getElementById('customer_id').value = data.customer_id;
-      document.getElementById('name').value = data.name;
-      document.getElementById('identification_number').value = data.identification_number;
+      document.getElementById('name').value = data.full_name || data.name;
+      document.getElementById('identification_number').value = data.number_identity || data.identification_number;
       document.getElementById('email').value = data.email || '';
       document.getElementById('phone').value = data.phone || '';
-      document.getElementById('address').value = data.address || '';
+      document.getElementById('address').value = data.adress || data.address || '';
       new bootstrap.Modal(document.getElementById('customerModal')).show();
     } else if (e.target.matches('.btn-del')) {
       if (!confirm('Delete customer?')) return;

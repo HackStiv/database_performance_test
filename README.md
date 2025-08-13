@@ -68,12 +68,19 @@ The database follows **Third Normal Form (3NF)** principles to ensure data integ
 |  customers  |<-----| invoices  |<-----| transactions |----->| platforms |
 +-------------+      +-----------+      +--------------+      +-----------+
 | customer_id |      | invoice_id|      | transaction_id|      |platform_id|
-| name        |      |customer_id|      | invoice_id    |      | name      |
-| ...         |      | ...       |      | customer_id   |      | ...       |
-+-------------+      +-----------+      | platform_id   |      +-----------+
+| full_name   |      |customer_id|      | invoice_id    |      | name      |
+| number_identity|   | ...       |      | customer_id   |      | ...       |
++-------------+      +-----------+      | platafom_id   |      +-----------+
                                         | ...           |
                                         +---------------+
 ```
+
+**Key Differences from Original Schema:**
+- `name` → `full_name`
+- `identification_number` → `number_identity`
+- `address` → `adress` (intentional typo)
+- `platform_id` → `platafom_id` (intentional typo)
+- Enhanced indexing for better performance
 
 ---
 

@@ -42,18 +42,18 @@ async function runSeed() {
         const address = (r['Dirección'] || null);
         const phone = (r['Teléfono'] || null);
         const email = (r['Correo Electrónico'] || null);
-        // Insert or ignore on duplicate identification_number
+        // Insert or ignore on duplicate number_identity
         const [res] = await conn.query(
-          `INSERT INTO customers (name, identification_number, address, phone, email)
+          `INSERT INTO customers (full_name, number_identity, address, phone, email)
            VALUES (?, ?, ?, ?, ?)
-           ON DUPLICATE KEY UPDATE name = VALUES(name), address = VALUES(address), phone = VALUES(phone), email = VALUES(email)`,
+           ON DUPLICATE KEY UPDATE full_name = VALUES(full_name), address = VALUES(address), phone = VALUES(phone), email = VALUES(email)`,
           [name, idnum, address, phone, email]
         );
         // get the id
         let custId;
         if (res.insertId && res.insertId !== 0) custId = res.insertId;
         else {
-          const [rows] = await conn.query('SELECT customer_id FROM customers WHERE identification_number = ?', [idnum]);
+          const [rows] = await conn.query('SELECT customer_id FROM customers WHERE number_identity = ?', [idnum]);
           custId = rows[0].customer_id;
         }
         customerMap.set(idnum, custId);
@@ -103,7 +103,7 @@ async function runSeed() {
       // Insert ignoring duplicate txId
       await conn.query(
         `INSERT INTO transactions
-        (transaction_id, transaction_datetime, transaction_amount, transaction_status, transaction_type, customer_id, platform_id, invoice_id, amount_paid)
+        (transaction_id, transaction_datetime, transaction_amount, transaction_status, transaction_type, customer_id, platafom_id, invoice_id, amount_paid)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE transaction_status = VALUES(transaction_status)`,
         [txId, datetime || null, txAmount, status, type, custId, platformId, invId, amountPaid]
