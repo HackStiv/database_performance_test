@@ -1,7 +1,7 @@
-// server/index.js
+// server/index.js - Database Performance Test API
 const express = require('express');
-const pool = require('./db');
-const runSeed = require('./seeders/run_seeders');
+const dbConnection = require('./db');
+const seedData = require('./seeders/run_seeders');
 const { body, validationResult } = require('express-validator');
 const cors = require('cors');
 const { parse } = require('csv-parse/sync');
@@ -10,7 +10,7 @@ const path = require('path');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // --- CRUD: Customers ---
 
@@ -20,23 +20,23 @@ app.get('/api/customers', async (req, res) => {
   const limit = parseInt(req.query.limit || '102');
   const offset = (page - 1) * limit;
   try {
-    const [rows] = await pool.query('SELECT * FROM customers ORDER BY customer_id LIMIT ? OFFSET ?', [limit, offset]);
-    res.json({ data: rows, page, limit });
+    const [rows] = await dbConnection.query('SELECT * FROM customers ORDER BY customer_id LIMIT ? OFFSET ?', [limit, offset]);
+    res.json({ data: rows, page, limit, total: rows.length });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error fetching customers:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // GET /api/customers/:id
 app.get('/api/customers/:id', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM customers WHERE customer_id = ?', [req.params.id]);
+    const [rows] = await dbConnection.query('SELECT * FROM customers WHERE customer_id = ?', [req.params.id]);
     if (rows.length === 0) return res.status(404).json({ error: 'Customer not found' });
     res.json(rows[0]);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error fetching customer by ID:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -50,7 +50,7 @@ app.post('/api/customers',
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     const { name, identification_number, address, phone, email } = req.body;
     try {
-      const [result] = await pool.query(
+      const [result] = await dbConnection.query(
         `INSERT INTO customers (name, identification_number, address, phone, email)
          VALUES (?, ?, ?, ?, ?)`,
         [name, identification_number, address || null, phone || null, email || null]
@@ -58,9 +58,9 @@ app.post('/api/customers',
       const inserted = { customer_id: result.insertId, name, identification_number, address, phone, email };
       res.status(201).json(inserted);
     } catch (err) {
-      console.error(err);
+      console.error('Error creating customer:', err);
       if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'Duplicate entry (identification or email)' });
-      res.status(500).json({ error: 'Server error' });
+      res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -71,7 +71,7 @@ app.put('/api/customers/:id',
     const id = req.params.id;
     const { name, identification_number, address, phone, email } = req.body;
     try {
-      const [result] = await pool.query(
+      const [result] = await dbConnection.query(
         `UPDATE customers SET name = COALESCE(?, name),
          identification_number = COALESCE(?, identification_number),
          address = COALESCE(?, address),
@@ -81,34 +81,34 @@ app.put('/api/customers/:id',
         [name, identification_number, address, phone, email, id]
       );
       if (result.affectedRows === 0) return res.status(404).json({ error: 'Customer not found' });
-      const [rows] = await pool.query('SELECT * FROM customers WHERE customer_id = ?', [id]);
+      const [rows] = await dbConnection.query('SELECT * FROM customers WHERE customer_id = ?', [id]);
       res.json(rows[0]);
     } catch (err) {
-      console.error(err);
+      console.error('Error updating customer:', err);
       if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'Duplicate entry' });
-      res.status(500).json({ error: 'Server error' });
+      res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 // DELETE /api/customers/:id
 app.delete('/api/customers/:id', async (req, res) => {
   try {
-    const [result] = await pool.query('DELETE FROM customers WHERE customer_id = ?', [req.params.id]);
+    const [result] = await dbConnection.query('DELETE FROM customers WHERE customer_id = ?', [req.params.id]);
     if (result.affectedRows === 0) return res.status(404).json({ error: 'Customer not found' });
-    res.json({ success: true });
+    res.json({ success: true, message: 'Customer deleted successfully' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error deleting customer:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 
-// Reports (advanced queries only accessible via Postman
+// Reports (advanced queries only accessible via Postman)
 
 // Total paid by each customer
 app.get('/api/reports/total_paid_by_customer', async (req, res) => {
   try {
-    const [rows] = await pool.query(`
+    const [rows] = await dbConnection.query(`
       SELECT c.customer_id, c.name, c.identification_number,
              COALESCE(SUM(t.amount_paid), 0) AS total_paid
       FROM customers c
@@ -118,15 +118,15 @@ app.get('/api/reports/total_paid_by_customer', async (req, res) => {
     `);
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error generating total paid report:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Pending invoices with client and last transaction info
 app.get('/api/reports/pending_invoices', async (req, res) => {
   try {
-    const [rows] = await pool.query(`
+    const [rows] = await dbConnection.query(`
       SELECT i.invoice_id, i.invoice_number, i.billing_period, i.amount_billed,
              COALESCE(SUM(t.amount_paid),0) AS total_paid,
              (i.amount_billed - COALESCE(SUM(t.amount_paid),0)) AS balance,
@@ -140,8 +140,8 @@ app.get('/api/reports/pending_invoices', async (req, res) => {
     `);
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error generating pending invoices report:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -149,7 +149,7 @@ app.get('/api/reports/pending_invoices', async (req, res) => {
 app.get('/api/reports/transactions_by_platform/:platform', async (req, res) => {
   try {
     const platform = req.params.platform;
-    const [rows] = await pool.query(`
+    const [rows] = await dbConnection.query(`
       SELECT t.transaction_id, t.transaction_datetime, t.transaction_amount, t.amount_paid, t.transaction_status,
              c.customer_id, c.name AS customer_name, i.invoice_id, i.invoice_number
       FROM transactions t
@@ -161,18 +161,18 @@ app.get('/api/reports/transactions_by_platform/:platform', async (req, res) => {
     `, [platform]);
     res.json(rows);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error generating platform transactions report:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // --- Extra endpoint: execute seed (POST /api/seed) ---
 app.post('/api/seed', async (req, res) => {
   try {
-    await runSeed();
-    res.json({ success: true, message: 'Seed executed' });
+    await seedData();
+    res.json({ success: true, message: 'Data seeding completed successfully' });
   } catch (err) {
-    console.error(err);
+    console.error('Error during data seeding:', err);
     res.status(500).json({ error: 'Seed failed', detail: err.message });
   }
 });
@@ -180,8 +180,9 @@ app.post('/api/seed', async (req, res) => {
 // Serve static frontend (optional)
 app.use('/', express.static(path.join(__dirname, '..', 'app')));
 
-// Start
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Database Performance Test API server running on port ${PORT}`);
+  console.log(`Access the application at: http://localhost:${PORT}`);
 });

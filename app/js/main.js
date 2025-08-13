@@ -1,4 +1,4 @@
-const API = '';
+const API_BASE = '';
 
 async function fetchCustomers() {
   const res = await fetch('/api/customers');
@@ -103,14 +103,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btnRunSeed').addEventListener('click', async () => {
-    if (!confirm('Run CSV seed? This will insert data from server/data/data.csv')) return;
+    if (!confirm('Import CSV data? This will insert data from server/data/data.csv')) return;
     const res = await fetch('/api/seed', { method: 'POST' });
     const data = await res.json();
     if (res.ok) {
-      showAlert('Seed executed', 'success');
+      showAlert('Data import completed successfully', 'success');
       loadTable();
     } else {
-      showAlert('Seed failed: ' + (data.error || data.detail || JSON.stringify(data)), 'danger');
+      showAlert('Import failed: ' + (data.error || data.detail || JSON.stringify(data)), 'danger');
     }
   });
 });

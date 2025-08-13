@@ -1,8 +1,8 @@
-// server/db.js
+// server/db.js - Database connection configuration
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const pool = mysql.createPool({
+const dbConnection = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'root',
@@ -13,4 +13,4 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-module.exports = pool;
+module.exports = dbConnection;

@@ -1,4 +1,4 @@
-# database_performance_test#
+# Database Performance Test
 ## System Description
 
 This system is a web application designed to manage customers, invoices, and transactions efficiently. It allows users to create, edit, delete, and view customer records, as well as manage related invoices and transactions. The system supports bulk data import from CSV files and provides advanced queries for business insights.
@@ -18,8 +18,8 @@ This system is a web application designed to manage customers, invoices, and tra
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/s4mue3l2005/prueba-de-desempe-o-M4.git
-   cd prueba_desempeño_M4S4
+   git clone https://github.com/HackStiv/database_performance_test.git
+   cd database_performance_test
    ```
 
 2. **Install dependencies**
@@ -122,6 +122,6 @@ Below is a simplified representation of the relational model:
 
 ## Developer Information
 
-- **Name:** Samuel Arena
+- **Name:** Steven Marimon
 - **Clan:** caimán
-- **Email:** samyarena2005@gmail.com
+- **Email:** steven.marimon@example.com

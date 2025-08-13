@@ -1,8 +1,8 @@
-// server/seeders/run_seeders.js
+// server/seeders/run_seeders.js - CSV data import functionality
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('csv-parse/sync');
-const pool = require('../db');
+const dbConnection = require('../db');
 
 async function runSeed() {
   const csvPath = path.join(__dirname, '..', 'data', 'data.csv');
@@ -12,7 +12,7 @@ async function runSeed() {
   const content = fs.readFileSync(csvPath, 'utf8');
   const records = parse(content, { columns: true, skip_empty_lines: true });
 
-  const conn = await pool.getConnection();
+  const conn = await dbConnection.getConnection();
   try {
     await conn.beginTransaction();
 
@@ -111,10 +111,10 @@ async function runSeed() {
     }
 
     await conn.commit();
-    console.log('Seeders executed successfully.');
+    console.log('Data seeding completed successfully.');
   } catch (err) {
     await conn.rollback();
-    console.error('Seeding error:', err);
+    console.error('Error during data seeding:', err);
     throw err;
   } finally {
     conn.release();
@@ -129,4 +129,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { runSeed, pool };
+module.exports = { runSeed, dbConnection };
